@@ -1,11 +1,8 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"errors"
-	"fmt"
-	"os"
 	"strings"
 )
 
@@ -19,20 +16,17 @@ type Script struct {
 // Creates a dictionary of the given word length and counts ocurrences.
 func dict(buf []byte, wlen int) map[string]int {
 
-	dict := map[string]int{}
-
 	l := len(buf)
+
+	dict := make(map[string]int, l)
 
 	for i := 0; i+wlen < l; i++ {
 		s := string(buf[i : i+wlen])
 		if _, ok := dict[s]; ok == false {
 			dict[s] = 0
+		} else {
+			dict[s] = dict[s] + 1
 		}
-	}
-
-	s := string(buf)
-	for k := range dict {
-		dict[k] = strings.Count(s, k)
 	}
 
 	return dict
@@ -62,7 +56,7 @@ func getUnusedByte(buf []byte) (byte, error) {
 
 // Takes a buffer and its keys and reconstructs the original string.
 func Uncompress(buf []byte, keys []byte) ([]byte, error) {
-	for i := 0; i < len(keys); i++ {
+	for i, n := 0, len(keys); i < n; i++ {
 
 		slices := bytes.Split(buf, []byte{keys[i]})
 		l := len(slices)
@@ -73,9 +67,9 @@ func Uncompress(buf []byte, keys []byte) ([]byte, error) {
 	return buf, nil
 }
 
-// Compresses a buffer into a chunk and chunk keys.
-func Compress(buf []byte) ([]byte, []byte, error) {
-	keys := []byte{}
+// compresses a buffer into a chunk and chunk keys.
+func compress(buf []byte) ([]byte, []byte, error) {
+	keys := make([]byte, 0, int(len(buf)*8/10))
 
 	mv := -1
 
@@ -127,12 +121,6 @@ func Compress(buf []byte) ([]byte, []byte, error) {
 	return buf, keys, nil
 }
 
-// Uses buf and key to create the javascript decompressor.
-func Pack(buf []byte, keys []byte) string {
-	// return fmt.Sprintf("for(s='%s',i=0;j='%s'[i++];)with(s.split(j))s=join(pop());eval(s)", string(buf), string(keys))
-	return `_=` + SmartQuotes(string(buf)) + `;for(Y in $="` + string(keys) + `")with(_.split($[Y]))_=join(pop());eval(_)`
-}
-
 func SmartQuotes(str string) string {
 	a := len(strings.Split(str, `"`))
 	b := len(strings.Split(str, `'`))
@@ -144,26 +132,15 @@ func SmartQuotes(str string) string {
 	}
 }
 
-func JsCrush(buf []byte) string {
-	t, k, err := Compress(buf)
-	if err == nil {
-		return Pack(t, k)
-	}
-	return ""
+// Uses buf and key to create the javascript decompressor.
+func pack(buf []byte, keys []byte) string {
+	return `_=` + SmartQuotes(string(buf)) + `;for(Y in $="` + string(keys) + `")with(_.split($[Y]))_=join(pop());eval(_)`
 }
 
-func main() {
-	buf := bytes.NewBuffer(nil)
-	r := bufio.NewReader(os.Stdin)
-	for true {
-		b, err := r.ReadByte()
-		if err != nil {
-			break
-		}
-		buf.WriteByte(b)
-	}
-	t, k, err := Compress(buf.Bytes())
+func JsCrush(buf []byte) string {
+	t, k, err := compress(buf)
 	if err == nil {
-		fmt.Println(Pack(t, k))
+		return pack(t, k)
 	}
+	return ""
 }

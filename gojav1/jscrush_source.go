@@ -2,7 +2,6 @@ package gojav1
 
 // http://www.iteral.com/jscrush/
 var jscrush_src = `"use strict";
-
 var jscrush = function(data) {
     var B, c, e, i, j, M, m, N, O, o, Q, R, s, S, t, X, x;
     Q = [];
@@ -16,7 +15,7 @@ var jscrush = function(data) {
         if (O) {
             o = {};
             for (x in O) {
-                for (j = s.indexOf(x), o[x] = 0;~ j; o[x]++) {
+                for (j = s.indexOf(x), o[x] = 0; ~j; o[x]++) {
                     j = s.indexOf(x, j + x.length);
                 }
             }
@@ -26,7 +25,7 @@ var jscrush = function(data) {
                 for (X = i = 0; ++i < s.length - t;) {
                     if (!o[x = s.substr(j = i, t)]) {
                         if (~(j = s.indexOf(x, j + t))) {
-                            for (X = t, o[x] = 1;~ j; o[x]++) {
+                            for (X = t, o[x] = 1; ~j; o[x]++) {
                                 j = s.indexOf(x, j + t);
                             }
                         }
@@ -58,7 +57,7 @@ var jscrush = function(data) {
     var k1 = args[1] || "_",
         k2 = args[2] || "Y",
         k3 = args[3] || "$";
-    var codeStr="var "+k1 + '=' + cc;
-    return codeStr+';for(' + k2 + ' in ' + k3 + '=' + B + m + B + '){with(' + k1 + '.split(' + k3 + '[' + k2 + ']))' + k1 + '=join(pop());};eval(' + k1 + ')';
+    var codeStr = "var " + k1 + '=' + cc;
+    return codeStr + ';for(' + k2 + ' in ' + k3 + '=' + B + m + B + '){with(' + k1 + '.split(' + k3 + '[' + k2 + ']))' + k1 + '=join(pop());};eval(' + k1 + ')';
 };
 `

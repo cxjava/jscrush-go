@@ -2,6 +2,7 @@ package gojav1
 
 import (
 	"fmt"
+
 	"github.com/dop251/goja"
 )
 

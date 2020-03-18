@@ -17,7 +17,7 @@ func init() {
 
 func Jscrush(js string) string {
 	vm.Set("js_to_compress", js)
-	value, err := vm.RunString(`(function(js_to_compress) {return jscrush(js_to_compress) })(js_to_compress)`)
+	value, err := vm.RunString(`(function(js_to_compress) {return jscrusher.compress(js_to_compress) })(js_to_compress)`)
 	if err != nil {
 		fmt.Printf("Jscrush:%v\n", err)
 		return ""
